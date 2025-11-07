@@ -191,10 +191,11 @@ vms-main = {
     location                        = "Central India"
     resource_group_name             = "rg-dev"
     size                            = "Standard_B1s"
-    admin_username                  = "azureuser"
-    admin_password                  = "P@ssword123!"
     disable_password_authentication = false
     nic_name                        = "nic-dev"
+    kv_name                         = "kv-dev-ershad"
+    username_secret_name            = "adminusername"
+    password_secret_name            = "adminpassword"
     provision_vm_agent              = true
 
     source_image_reference = {
@@ -217,4 +218,51 @@ vms-main = {
       environment = "dev"
        }
   }
+}
+
+key_vaults-main = {
+  kv-dev = {
+    name                = "kv-dev-ershad"
+    resource_group_name = "rg-dev"
+    location            = "eastus"
+    sku_name            = "standard"
+    enabled_for_deployment          = true
+    enabled_for_disk_encryption     = true
+    enabled_for_template_deployment = false
+    purge_protection_enabled        = true
+    soft_delete_retention_days      = 7
+
+    access_policies = [
+      {
+        
+        key_permissions    = ["Get", "List", "Create", "Delete"]
+        secret_permissions = ["Get", "List", "Set", "Delete"]
+        certificate_permissions = ["Get", "List", "Create"]
+        storage_permissions     = ["Get", "List"]
+      }
+    ]
+
+    tags = {
+      environment = "dev"
+      owner       = "ershad"
+      project     = "terraform-modular-demo"
+      costcenter  = "cc001"
+    }
+  }
+}
+
+kv_secrets-main = {
+  secret1 = {
+    kv_name = "kv-dev-ershad"
+    rg_name = "rg-dev"
+    secret_name  = "adminusername"
+    secret_value = "azureuser"
+    
+  },
+  secret2 = {
+    kv_name = "kv-dev-ershad"
+    rg_name = "rg-dev"
+    secret_name  = "adminpassword"
+    secret_value = "P@ssword123!"    
+}
 }

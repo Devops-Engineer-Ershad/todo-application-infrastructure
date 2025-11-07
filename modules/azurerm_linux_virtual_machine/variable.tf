@@ -2,15 +2,18 @@
 variable "vms" {
   description = "Map of Linux Virtual Machine configurations"
   type = map(object({
-     # data block variable
-    nic_name                = string
-     # resource block variable
-    name                            = string
-    resource_group_name             = string
-    location                        = string
-    size                            = string
-    admin_username                  = string
-    admin_password                  = optional(string)
+    # data block variable
+    nic_name             = string
+    kv_name              = string
+    username_secret_name = string
+    password_secret_name = string
+    # resource block variable
+    name                = string
+    resource_group_name = string
+    location            = string
+    size                = string
+    # admin_username      = string                # value taken from key vault secret
+    # admin_password      = optional(string)      # value taken from key vault secret
     # network_interface_ids           = list(string)  # if we using data block for this then not required here
     disable_password_authentication = optional(bool)
     computer_name                   = optional(string)

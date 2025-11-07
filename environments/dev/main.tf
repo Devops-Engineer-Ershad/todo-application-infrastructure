@@ -48,5 +48,18 @@ module "vm-dev" {
   source = "../../modules/azurerm_linux_virtual_machine"
 
   vms = var.vms-main
-  depends_on = [module.rg-dev, module.nic-dev]
+  depends_on = [module.rg-dev, module.nic-dev, module.key_vault_secret-dev, module.key_vault-dev]
+}
+
+module key_vault-dev {
+  source = "../../modules/azurerm_key_vault"
+
+  key_vaults = var.key_vaults-main
+  depends_on = [module.rg-dev]
+}
+
+module key_vault_secret-dev {
+  source = "../../modules/azurerm_key_vault_secret"
+  kv_secrets = var.kv_secrets-main
+  depends_on = [module.key_vault-dev]
 }

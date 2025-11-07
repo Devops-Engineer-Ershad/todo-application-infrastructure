@@ -179,15 +179,18 @@ variable "vms-main" {
   description = "Map of Linux Virtual Machine configurations"
   type = map(object({
     # data block variable
-    nic_name                = string
+    nic_name             = string
+    kv_name              = string
+    username_secret_name = string
+    password_secret_name = string
     # resource block variable
     name                            = string
     resource_group_name             = string
     location                        = string
     size                            = string
-    admin_username                  = string
-    admin_password                  = optional(string)
-    # network_interface_ids           = list(string) # if we using data block for this then not required here
+    # admin_username                  = string           # value taken from key vault secret
+    # admin_password                  = optional(string) # value taken from key vault secret
+    # network_interface_ids           = list(string)     # if we using data block for this then not required here
     disable_password_authentication = optional(bool)
     computer_name                   = optional(string)
     custom_data                     = optional(string)
@@ -226,5 +229,56 @@ variable "vms-main" {
     })), [])
   }))
 }
+
+variable "key_vaults-main" {
+  description = "Map of Azure Key Vault configurations"
+  type = map(object({
+    name                = string
+    resource_group_name = string
+    location            = string
+    sku_name            = string
+    tenant_id           = optional(string)
+    enabled_for_deployment          = optional(bool)
+    enabled_for_disk_encryption     = optional(bool)
+    enabled_for_template_deployment = optional(bool)
+    purge_protection_enabled        = optional(bool)
+    soft_delete_retention_days      = optional(number)
+
+    access_policies = optional(list(object({
+      # tenant_id               = string    # if we using data block for this then not required here
+      # object_id               = string    # if we using data block for this then not required here
+      application_id          = optional(string)
+      key_permissions         = optional(list(string))
+      secret_permissions      = optional(list(string))
+      certificate_permissions = optional(list(string))
+      storage_permissions     = optional(list(string))
+    })), [])
+
+    tags = optional(map(string))
+  }))
+}
+
+variable "kv_secrets-main" {
+
+  type = map(object({
+    # Required
+    kv_name = string
+    rg_name = string
+    secret_name  = string
+
+    # Optional values (exactly one must be defined)
+    secret_value          = optional(string)
+    secret_value_wo       = optional(string)
+    secret_value_wo_version = optional(number)
+
+    # Optional metadata
+    content_type    = optional(string)
+    not_before_date = optional(string)
+    expiration_date = optional(string)
+    tags            = optional(map(string))
+  }))
+}
+
+
 
   

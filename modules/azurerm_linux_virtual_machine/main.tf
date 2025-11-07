@@ -4,15 +4,16 @@ resource "azurerm_linux_virtual_machine" "vm" {
   for_each = var.vms
 
   # ---------- Required Arguments ----------
-  name                            = each.value.name
-  location                        = each.value.location
-  resource_group_name             = each.value.resource_group_name
-  size                            = each.value.size
-  admin_username                  = each.value.admin_username
-  admin_password                  = each.value.admin_password
-  network_interface_ids           = [data.azurerm_network_interface.nic_ids[each.key].id]
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+  size                = each.value.size
+  # ---------- Credentials from Key Vault ----------
+  admin_username                  = data.azurerm_key_vault_secret.admin_username[each.key].value
+  admin_password                  = data.azurerm_key_vault_secret.admin_password[each.key].value
   disable_password_authentication = each.value.disable_password_authentication
 
+  network_interface_ids = [data.azurerm_network_interface.nic_ids[each.key].id]
   # ---------- Required Nested Block ----------
   source_image_reference {
     publisher = each.value.source_image_reference.publisher
@@ -22,18 +23,18 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   # ---------- Optional Arguments ----------
-  computer_name                   = each.value.computer_name
-  custom_data                     = each.value.custom_data
-  provision_vm_agent              = each.value.provision_vm_agent
-  allow_extension_operations      = each.value.allow_extension_operations
-  edge_zone                       = each.value.edge_zone
-  encryption_at_host_enabled      = each.value.encryption_at_host_enabled
-  patch_mode                      = each.value.patch_mode
-  reboot_setting                  = each.value.reboot_setting
-  secure_boot_enabled             = each.value.secure_boot_enabled
-  vtpm_enabled                    = each.value.vtpm_enabled
-  tags                            = each.value.tags
-  zone                            = each.value.zone
+  computer_name              = each.value.computer_name
+  custom_data                = each.value.custom_data
+  provision_vm_agent         = each.value.provision_vm_agent
+  allow_extension_operations = each.value.allow_extension_operations
+  edge_zone                  = each.value.edge_zone
+  encryption_at_host_enabled = each.value.encryption_at_host_enabled
+  patch_mode                 = each.value.patch_mode
+  reboot_setting             = each.value.reboot_setting
+  secure_boot_enabled        = each.value.secure_boot_enabled
+  vtpm_enabled               = each.value.vtpm_enabled
+  tags                       = each.value.tags
+  zone                       = each.value.zone
 
   # ---------- Optional Nested Block ----------
   dynamic "os_disk" {
