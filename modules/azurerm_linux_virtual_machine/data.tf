@@ -11,14 +11,14 @@ data "azurerm_key_vault" "kv" {
   
   }
 
-  data "azurerm_key_vault_secret" "admin_username" {
+  data "azurerm_key_vault_secret" "vm_admin_username" {
   for_each = var.vms
-  name         = each.value.username_secret_name
+  name         = each.value.vm_username_secret_name
   key_vault_id = data.azurerm_key_vault.kv[each.key].id
 }
 
-data "azurerm_key_vault_secret" "admin_password" {
+data "azurerm_key_vault_secret" "vm_admin_password" {
   for_each = var.vms
-  name         = each.value.password_secret_name
+  name         = each.value.vm_password_secret_name
   key_vault_id = data.azurerm_key_vault.kv[each.key].id
 }

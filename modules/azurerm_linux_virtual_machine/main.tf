@@ -9,8 +9,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
   resource_group_name = each.value.resource_group_name
   size                = each.value.size
   # ---------- Credentials from Key Vault ----------
-  admin_username                  = data.azurerm_key_vault_secret.admin_username[each.key].value
-  admin_password                  = data.azurerm_key_vault_secret.admin_password[each.key].value
+  admin_username                  = data.azurerm_key_vault_secret.vm_admin_username[each.key].value
+  admin_password                  = data.azurerm_key_vault_secret.vm_admin_password[each.key].value
   disable_password_authentication = each.value.disable_password_authentication
 
   network_interface_ids = [data.azurerm_network_interface.nic_ids[each.key].id]

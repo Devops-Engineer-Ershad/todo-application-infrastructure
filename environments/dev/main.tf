@@ -55,15 +55,28 @@ module "vm" {
   depends_on = [module.rg, module.nic, module.key_vault_secret, module.key_vault]
 }
 
-module key_vault {
+module "key_vault" {
   source = "../../modules/azurerm_key_vault"
 
   key_vaults = var.key_vaults
   depends_on = [module.rg]
 }
 
-module key_vault_secret {
+module "key_vault_secret" {
   source = "../../modules/azurerm_key_vault_secret"
   kv_secrets = var.kv_secrets
   depends_on = [module.key_vault]
+}
+
+module "mssql_server" {
+  source = "../../modules/azurerm_mssql_server"
+
+  sql_servers = var.sql_servers
+  depends_on = [module.rg, module.key_vault_secret, module.key_vault]
+}
+module "mssql_database" {
+  source = "../../modules/azurerm_mssql_database"
+
+  sql_databases = var.sql_databases
+  depends_on = [module.mssql_server]
 }

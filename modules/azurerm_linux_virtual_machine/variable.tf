@@ -3,10 +3,10 @@ variable "vms" {
   description = "Map of Linux Virtual Machine configurations"
   type = map(object({
     # data block variable
-    nic_name             = string
-    kv_name              = string
-    username_secret_name = string
-    password_secret_name = string
+    nic_name                = string
+    kv_name                 = string
+    vm_username_secret_name = string
+    vm_password_secret_name = string
     # resource block variable
     name                = string
     resource_group_name = string
