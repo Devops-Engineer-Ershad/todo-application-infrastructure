@@ -1,4 +1,4 @@
-variable "rg-main" {
+variable "rgs" {
     type = map(object({
         name     = string                   #name of the resource group
         location = string                   #location of the resource group
@@ -7,7 +7,7 @@ variable "rg-main" {
     }))
 }
 
-variable "stg-main" {
+variable "stgs" {
   description = "Map of storage accounts configuration"
   type = map(object({
     # ---------- Required ----------
@@ -49,7 +49,7 @@ variable "stg-main" {
   }))
 }
 
-  variable "vnet-main" {
+  variable "vnets" {
   description = "Map of Virtual Network configurations"
   type = map(object({
     name                = string
@@ -85,7 +85,7 @@ variable "stg-main" {
 }
 
 
-variable "pip-main" {
+variable "pips" {
   description = "Map of public IP configurations"
   type = map(object({
     name                        = string
@@ -107,7 +107,7 @@ variable "pip-main" {
 
 
 # Network Security Group (NSG)
-variable "nsg-main" {
+variable "nsgs" {
   description = "Map of Network Security Group configurations"
   type = map(object({
     name                = string
@@ -134,7 +134,7 @@ variable "nsg-main" {
 }
 
 # Network Interface (NIC)
-variable "nic-main" {
+variable "nics" {
   description = "Map of Network Interface configurations"
   type = map(object({
     # data block variable
@@ -161,7 +161,7 @@ variable "nic-main" {
 }
 
 # NIC ↔ NSG Association
-variable "nic_nsg_association-main" {
+variable "nic_nsg_association" {
   description = "Map defining NIC and NSG association"
   type = map(object({
     # data block variable
@@ -175,7 +175,7 @@ variable "nic_nsg_association-main" {
 }
 
 # Virtual Machine (Linux)
-variable "vms-main" {
+variable "vms" {
   description = "Map of Linux Virtual Machine configurations"
   type = map(object({
     # data block variable
@@ -230,7 +230,7 @@ variable "vms-main" {
   }))
 }
 
-variable "key_vaults-main" {
+variable "key_vaults" {
   description = "Map of Azure Key Vault configurations"
   type = map(object({
     name                = string
@@ -258,7 +258,7 @@ variable "key_vaults-main" {
   }))
 }
 
-variable "kv_secrets-main" {
+variable "kv_secrets" {
 
   type = map(object({
     # Required

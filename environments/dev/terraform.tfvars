@@ -1,6 +1,6 @@
-rg-main = {
+rgs = {
     rg1 = {
-        name        = "rg-dev"
+        name        = "rg-todo"
         location    = "Central India"
         managed_by  = " managed by dev team"
     tags = {
@@ -26,10 +26,10 @@ rg-main = {
 }
 }
 
-stg-main = {
+stgs = {
     stg1 = {
         name                     = "stgdevaccount61"
-        resource_group_name      = "rg-dev"
+        resource_group_name      = "rg-todo"
         location                 = "Central India"
         account_tier             = "Standard"
         account_replication_type = "LRS"
@@ -73,11 +73,11 @@ stg-main = {
     }
 }
 
-vnet-main = {
+vnets = {
     vnet1 = {
-        name                = "vnet-dev"
+        name                = "vnet-todo"
         location            = "Central India"
-        resource_group_name = "rg-dev"
+        resource_group_name = "rg-todo"
         address_space       = ["10.0.0.0/16"]
         tags = {
             environment = "dev"
@@ -87,23 +87,23 @@ vnet-main = {
     }
    subnets = [
   {
-        name           = "subnet-dev1"
+        name           = "frontend-subnet"
         address_prefix = ["10.0.1.0/24"] 
 }
 ,
 {
-        name           = "subnet-dev2"
+        name           = "backend-subnet"
         address_prefix = ["10.0.2.0/24"] 
 }
 ]  
 }
 }
 
-pip-main = {
+pips = {
   pip1 = {
-    name                        = "pip-dev"
+    name                        = "pip-frontend"
     location                    = "Central India"
-    resource_group_name         = "rg-dev"
+    resource_group_name         = "rg-todo"
     allocation_method           = "Static"
     tags = {
       environment = "dev"
@@ -114,9 +114,9 @@ pip-main = {
   }
 
   pip2 = {
-    name                        = "pip-prod"
+    name                        = "pip-backend"
     location                    = "Central India"
-    resource_group_name         = "rg-prod"
+    resource_group_name         = "rg-todo"
     allocation_method           = "Static"
     sku                         = "Standard"
     idle_timeout_in_minutes     = 15
@@ -129,11 +129,11 @@ pip-main = {
   }
 }
 
-nsg-main = {
+nsgs = {
   nsg1 = {
-    name                = "nsg-dev"
+    name                = "nsg-frontend"
     location            = "Central India"
-    resource_group_name = "rg-dev"
+    resource_group_name = "rg-todo"
     tags = { 
       environment = "dev" 
       }
@@ -152,16 +152,39 @@ nsg-main = {
       }
     ]
   }
+
+  nsg2 = {
+    name                = "nsg-backend"
+    location            = "Central India"
+    resource_group_name = "rg-todo"
+    tags = { 
+      environment = "dev" 
+      }
+
+    security_rules = [
+      {
+        name                       = "HTTP"
+        priority                   = 1002
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range           = "*"
+        destination_port_range      = "80"
+        source_address_prefix       = "*"
+        destination_address_prefix  = "*"
+      }
+    ]
+  }
 }
 
-nic-main = {
+nics = {
   nic1 = {
-    vnet_name          = "vnet-dev"
-    subnet_name        = "subnet-dev1"
-    pip_name           = "pip-dev"
-    name                = "nic-dev"
+    vnet_name          = "vnet-todo"
+    subnet_name        = "frontend-subnet"
+    pip_name           = "pip-frontend"
+    name                = "nic-frontend"
     location            = "Central India"
-    resource_group_name = "rg-dev"
+    resource_group_name = "rg-todo"
     enable_ip_forwarding          = false
     enable_accelerated_networking = false
     tags = { environment = "dev" }
@@ -175,25 +198,84 @@ nic-main = {
       }
     ]
   }
-}
+  nic2 = {
+    vnet_name          = "vnet-todo"
+    subnet_name        = "backend-subnet"
+    pip_name           = "pip-backend"
+    name                = "nic-backend"
+    location            = "Central India"
+    resource_group_name = "rg-todo"
+    enable_ip_forwarding          = false
+    enable_accelerated_networking = false
+    tags = { environment = "dev" }
 
-nic_nsg_association-main = {
-  assoc1 = {
-    nic_name                  = "nic-dev"
-    nsg_name                  = "nsg-dev"
-    resource_group_name       = "rg-dev"
+    ip_configurations = [
+      {
+        name                          = "ipconfig2"
+        private_ip_address_allocation = "Dynamic"
+        private_ip_address_version    = "IPv4"
+        primary                       = true
+      }
+    ]
   }
 }
 
-vms-main = {
+nic_nsg_association = {
+  assoc1 = {
+    nic_name                  = "nic-frontend"
+    nsg_name                  = "nsg-frontend"
+    resource_group_name       = "rg-todo"
+  }
+  assoc2 = {
+    nic_name                  = "nic-backend"
+    nsg_name                  = "nsg-backend"
+    resource_group_name       = "rg-todo"
+}
+}
+
+vms = {
   vm1 = {
-    name                            = "vm-dev"
+    name                            = "vm-todo-frontend"
     location                        = "Central India"
-    resource_group_name             = "rg-dev"
+    resource_group_name             = "rg-todo"
     size                            = "Standard_B1s"
     disable_password_authentication = false
-    nic_name                        = "nic-dev"
-    kv_name                         = "kv-dev-ershad"
+    nic_name                        = "nic-frontend"
+    kv_name                         = "kv-todo-apps"
+    username_secret_name            = "adminusername"
+    password_secret_name            = "adminpassword"
+    provision_vm_agent              = true
+
+    source_image_reference = {
+      publisher = "Canonical"
+      offer     = "UbuntuServer"
+      sku       = "18.04-LTS"
+      version   = "latest"
+    }
+
+    os_disk = [
+      {
+      name                 = "vm-todo-frontend-osdisk"
+      caching              = "ReadWrite"
+      storage_account_type = "Standard_LRS"
+      disk_size_gb         = 30
+    }
+    ]
+
+    admin_ssh_key   = []
+    boot_diagnostics = []
+    tags = { 
+      environment = "dev"
+       }
+  }
+  vm2 = {
+    name                            = "vm-todo-backend"
+    location                        = "Central India"
+    resource_group_name             = "rg-todo"
+    size                            = "Standard_B1s"
+    disable_password_authentication = false
+    nic_name                        = "nic-backend"
+    kv_name                         = "kv-todo-apps"
     username_secret_name            = "adminusername"
     password_secret_name            = "adminpassword"
     provision_vm_agent              = true
@@ -206,7 +288,7 @@ vms-main = {
     }
 
     os_disk = [{
-      name                 = "vm-dev-osdisk"
+      name                 = "vm-todo-backend-osdisk"
       caching              = "ReadWrite"
       storage_account_type = "Standard_LRS"
       disk_size_gb         = 30
@@ -220,10 +302,10 @@ vms-main = {
   }
 }
 
-key_vaults-main = {
+key_vaults = {
   kv-dev = {
-    name                = "kv-dev-ershad"
-    resource_group_name = "rg-dev"
+    name                = "kv-todo-apps"
+    resource_group_name = "rg-todo"
     location            = "eastus"
     sku_name            = "standard"
     enabled_for_deployment          = true
@@ -251,17 +333,17 @@ key_vaults-main = {
   }
 }
 
-kv_secrets-main = {
+kv_secrets = {
   secret1 = {
-    kv_name = "kv-dev-ershad"
-    rg_name = "rg-dev"
+    kv_name = "kv-todo-apps"
+    rg_name = "rg-todo"
     secret_name  = "adminusername"
     secret_value = "azureuser"
     
   },
   secret2 = {
-    kv_name = "kv-dev-ershad"
-    rg_name = "rg-dev"
+    kv_name = "kv-todo-apps"
+    rg_name = "rg-todo"
     secret_name  = "adminpassword"
     secret_value = "P@ssword123!"    
 }
