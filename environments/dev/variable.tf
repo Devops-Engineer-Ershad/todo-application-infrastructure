@@ -188,6 +188,8 @@ variable "vms" {
     resource_group_name = string
     location            = string
     size                = string
+    # costom_data script_name
+    script_name         = string
     # admin_username                  = string           # value taken from key vault secret
     # admin_password                  = optional(string) # value taken from key vault secret
     # network_interface_ids           = list(string)     # if we using data block for this then not required here

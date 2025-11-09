@@ -24,7 +24,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   # ---------- Optional Arguments ----------
   computer_name              = each.value.computer_name
-  custom_data                = each.value.custom_data
+  custom_data                = base64encode(file(each.value.script_name))   # custom_data usage
   provision_vm_agent         = each.value.provision_vm_agent
   allow_extension_operations = each.value.allow_extension_operations
   edge_zone                  = each.value.edge_zone

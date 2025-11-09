@@ -139,18 +139,30 @@ nsgs = {
     }
 
     security_rules = [
-      {
-        name                       = "SSH"
-        priority                   = 1001
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "22"
-        source_address_prefix      = "*"
-        destination_address_prefix = "*"
-      }
-    ]
+  {
+    name                       = "SSH"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  },
+  {
+    name                       = "HTTP"
+    priority                   = 1002
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+]
+
   }
 
   nsg2 = {
@@ -164,7 +176,7 @@ nsgs = {
     security_rules = [
       {
         name                       = "HTTP"
-        priority                   = 1002
+        priority                   = 1003
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -245,7 +257,7 @@ vms = {
     vm_username_secret_name         = "vm-adminusername"
     vm_password_secret_name         = "vm-adminpassword"
     provision_vm_agent              = true
-
+    script_name                     = "middleware_nginx.sh"
     source_image_reference = {
       publisher = "Canonical"
       offer     = "UbuntuServer"
@@ -279,6 +291,7 @@ vms = {
     vm_username_secret_name         = "vm-adminusername"
     vm_password_secret_name         = "vm-adminpassword"
     provision_vm_agent              = true
+    script_name                     = "middleware_nginx.sh"
 
     source_image_reference = {
       publisher = "Canonical"
@@ -318,7 +331,7 @@ key_vaults = {
       {
 
         key_permissions         = ["Get", "List", "Create", "Delete"]
-        secret_permissions      = ["Get", "List", "Set", "Delete"]
+        secret_permissions      = ["Get", "List", "Set", "Delete", "Recover"]
         certificate_permissions = ["Get", "List", "Create"]
         storage_permissions     = ["Get", "List"]
       }
