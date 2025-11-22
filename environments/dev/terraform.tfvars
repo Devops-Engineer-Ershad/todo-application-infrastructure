@@ -181,10 +181,22 @@ nsgs = {
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "80"
+        destination_port_range     = "22"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "CustomAppPort"
+        priority                   = 1004
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "8000"
         source_address_prefix      = "*"
         destination_address_prefix = "*"
       }
+    
     ]
   }
 }
@@ -291,7 +303,7 @@ vms = {
     vm_username_secret_name         = "vm-adminusername"
     vm_password_secret_name         = "vm-adminpassword"
     provision_vm_agent              = true
-    script_name                     = "middleware_nginx.sh"
+    script_name                     = "python.sh"
 
     source_image_reference = {
       publisher = "Canonical"
