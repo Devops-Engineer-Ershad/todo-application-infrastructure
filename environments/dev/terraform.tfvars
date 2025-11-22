@@ -175,7 +175,7 @@ nsgs = {
 
     security_rules = [
       {
-        name                       = "HTTP"
+        name                       = "SSH"
         priority                   = 1003
         direction                  = "Inbound"
         access                     = "Allow"
@@ -186,7 +186,7 @@ nsgs = {
         destination_address_prefix = "*"
       },
       {
-        name                       = "CustomAppPort"
+        name                       = "HTTP"
         priority                   = 1004
         direction                  = "Inbound"
         access                     = "Allow"
@@ -265,7 +265,7 @@ vms = {
     size                            = "Standard_B1s"
     disable_password_authentication = false
     nic_name                        = "nic-frontend"
-    kv_name                         = "kv-todo-apps"
+    kv_name                         = "kv-todo-monolithic"
     vm_username_secret_name         = "vm-adminusername"
     vm_password_secret_name         = "vm-adminpassword"
     provision_vm_agent              = true
@@ -299,7 +299,7 @@ vms = {
     size                            = "Standard_B1s"
     disable_password_authentication = false
     nic_name                        = "nic-backend"
-    kv_name                         = "kv-todo-apps"
+    kv_name                         = "kv-todo-monolithic"
     vm_username_secret_name         = "vm-adminusername"
     vm_password_secret_name         = "vm-adminpassword"
     provision_vm_agent              = true
@@ -329,7 +329,7 @@ vms = {
 
 key_vaults = {
   kv-dev = {
-    name                            = "kv-todo-apps"
+    name                            = "kv-todo-monolithic"
     resource_group_name             = "rg-todo"
     location                        = "eastus"
     sku_name                        = "standard"
@@ -360,26 +360,26 @@ key_vaults = {
 
 kv_secrets = {
   secret1 = {
-    kv_name      = "kv-todo-apps"
+    kv_name      = "kv-todo-monolithic"
     rg_name      = "rg-todo"
     secret_name  = "vm-adminusername"
     secret_value = "azureuser"
 
   },
   secret2 = {
-    kv_name      = "kv-todo-apps"
+    kv_name      = "kv-todo-monolithic"
     rg_name      = "rg-todo"
     secret_name  = "vm-adminpassword"
     secret_value = "P@ssword123!"
   },
   secret3 = {
-    kv_name      = "kv-todo-apps"
+    kv_name      = "kv-todo-monolithic"
     rg_name      = "rg-todo"
     secret_name  = "sql-adminusername"
     secret_value = "sqladmintodo"
   },
   secret4 = {
-    kv_name      = "kv-todo-apps"
+    kv_name      = "kv-todo-monolithic"
     rg_name      = "rg-todo"
     secret_name  = "sql-adminpassword"
     secret_value = "P@ssword123!"
@@ -393,7 +393,7 @@ sql_servers = {
     resource_group_name                      = "rg-todo"
     location                                 = "Central India"
     version                                  = "12.0"
-    kv_name                                  = "kv-todo-apps"
+    kv_name                                  = "kv-todo-monolithic"
     sql_username_secret_name                 = "sql-adminusername"
     sql_password_secret_name                 = "sql-adminpassword"
     connection_policy                        = "Default"
