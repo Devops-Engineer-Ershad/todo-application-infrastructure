@@ -1,6 +1,10 @@
 sudo apt update
-sudo apt install -y python3
-sudo apt install -y python3-pip
+sudo apt install -y software-properties-common
+sudo add-apt-repository -y ppa:deadsnakes/ppa && sudo apt update
+sudo apt install -y python3.10 python3.10-venv python3.10-dev
+python3.10 -m pip install --upgrade pip
+
+
 git clone https://github.com/devopsengineer-ershad/PyTodoBackEndMonoLith.git
 cd PyTodoBackEndMonoLith
 
