@@ -1,7 +1,6 @@
 sudo apt update
-sudo apt install -y python3
-sudo apt install -y python3-pip
-https://github.com/devopsengineer-ershad/PyTodoBackEndMonoLith.git
+sudo apt install python3 python3-pip -y
+git clone https://github.com/devopsengineer-ershad/PyTodoBackEndMonoLith.git
 cd PyTodoBackEndMonoLith
 
 sudo su
