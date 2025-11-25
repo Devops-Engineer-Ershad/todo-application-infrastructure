@@ -1,0 +1,68 @@
+
+name: "Deployment of Infra Pipeline"
+
+on: workflow_dispatch
+
+permissions:
+  id-token: write
+  contents: read
+jobs: 
+  terraform-init-plan:
+    runs-on: self-hosted
+    environment: dev
+    steps:    
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+      - name: Azure Login
+        uses: Azure/login@v2.3.0
+        with:
+          client-id: 6f74b872-17b6-4aee-a38a-4843862f3f3b
+          tenant-id:  cb484d07-1268-4e17-b8eb-7a555e150ba9
+          subscription-id: 9ea53555-e829-4a44-979e-046e7d148cb5
+          
+      - name: Terraform fmt
+        run: terraform fmt -recursive
+        working-directory: environments/dev
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false
+        working-directory: environments/dev
+        
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: environments/dev
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
+        working-directory: environments/dev
+        
+  terraform-apply: 
+    runs-on: self-hosted
+    needs: terraform-init-plan
+    environment: dev
+    steps:    
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+        
+      - name: Azure Login
+        uses: Azure/login@v2.3.0
+        with:
+          client-id: 6f74b872-17b6-4aee-a38a-4843862f3f3b
+          tenant-id:  cb484d07-1268-4e17-b8eb-7a555e150ba9
+          subscription-id: 9ea53555-e829-4a44-979e-046e7d148cb5
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false  
+        working-directory: environments/dev
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply --auto-approve
+        continue-on-error: true
+        working-directory: environments/dev   
+          
