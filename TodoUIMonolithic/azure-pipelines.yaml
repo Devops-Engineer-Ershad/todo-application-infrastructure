@@ -56,7 +56,7 @@ stages:
         inputs:
           targetType: 'inline'
           script: |
-            npm install -g markdownlint
+            npm install -g markdownlint-cli
             markdownlint $(System.DefaultWorkingDirectory)
 
   - stage: todofrontendapplication
