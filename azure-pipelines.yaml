@@ -1,0 +1,90 @@
+trigger: none
+
+pool: AzureAnchors
+
+stages:
+  - stage: scanning
+    displayName: scanning infrastructure
+    jobs:
+      - job: tfsecandtflint
+        displayName: Tfsec and Tflint Scanning
+        steps:
+        - task: tfsec@1
+          inputs:
+            version: 'v1.26.0'
+            dir: '$(System.DefaultWorkingDirectory)/environments/dev'
+
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: |
+              cd "$(System.DefaultWorkingDirectory)/environments/dev"
+                    tflint --init
+                    tflint --recursive
+  - stage: terraforminitvalidateplan
+    dependsOn: scanning
+    displayName: Terraform init plan validate
+    jobs:
+      - job: initvalidateplan
+        steps:
+        - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/environments/dev'
+              backendServiceArm: 'azure service connection'
+              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+              backendAzureRmStorageAccountName: 'donotdeletestorage55'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'dev.terraform.tfstate'
+        - task: TerraformTask@5
+          displayName: Terraform Validate
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/environments/dev'
+        - task: TerraformTask@5
+          displayName: Terraform Plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/environments/dev'
+            environmentServiceNameAzureRM: 'azure service connection'
+  - stage: manualvalidation
+    dependsOn: terraforminitvalidateplan
+    displayName: Manual validation
+    pool: server
+    jobs:
+      - job: Manualvalidation
+        steps:
+        - task: ManualValidation@1
+          inputs:
+            notifyUsers: 'ershadalams150@gmail.com'
+            approvers: 'ershadalams150@gmail.com'
+            instructions: 'if plan completed than we think for apply'
+  - stage: terraforminitandapply
+    dependsOn: manualvalidation
+    displayName: Terraform init and apply
+    jobs:
+      - job: terraforminitandapply
+        steps:
+        - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/environments/dev'
+            backendServiceArm: 'azure service connection'
+            backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+            backendAzureRmStorageAccountName: 'donotdeletestorage55'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: 'dev.terraform.tfstate'
+        - task: TerraformTask@5
+          displayName: Terraform Apply
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/environments/dev'
+            commandOptions: '-auto-approve'
+            environmentServiceNameAzureRM: 'azure service connection'
