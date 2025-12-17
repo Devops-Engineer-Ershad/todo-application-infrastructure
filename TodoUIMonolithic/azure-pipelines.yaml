@@ -1,0 +1,87 @@
+trigger: none
+# - main
+pool: AzureAnchors
+
+variables:
+  - group: Sonar_token 
+stages:
+  - stage: LintAndstaticanalysis
+    jobs:
+    - job: staticAnalysis
+      displayName: Static Analysis(Sonarqube)
+      steps:
+      - task: PowerShell@2
+        displayName: SonarQube Scan
+        inputs:
+         targetType: 'inline'
+         script: |
+          sonar-scanner `
+            -D"sonar.host.url=http://localhost:9000" `
+            -D"sonar.token=$(SONAR_TOKEN)" `
+            -D"sonar.projectKey=todo-app"
+
+        
+    - job: lintingofallfiles
+      steps:
+      - task: PowerShell@2
+        continueOnError: true
+        displayName: Lint JavaScript(Biome)
+        inputs:
+          targetType: 'inline'
+          script: 'biome lint $(System.DefaultWorkingDirectory)/src/'
+      
+      - task: PowerShell@2
+        continueOnError: true
+        displayName: stylelint For CSS file
+        inputs:
+          targetType: 'inline'
+          script: |
+            npm install -g stylelint
+            npm install -g stylelint-config-standard
+            stylelint $(System.DefaultWorkingDirectory)/src/ --config stylelint.config.mjs
+
+      - task: PowerShell@2
+        continueOnError: true
+        displayName: Linting For Yaml File
+        inputs:
+          targetType: 'inline'
+          script: |
+            python -m pip install --user yamllint
+            python -m yamllint $(System.DefaultWorkingDirectory)
+
+
+      - task: PowerShell@2
+        continueOnError: true
+        displayName: Markdownlint For MD Files
+        inputs:
+          targetType: 'inline'
+          script: |
+            npm install -g markdownlint
+            markdownlint $(System.DefaultWorkingDirectory)
+
+  - stage: todofrontendapplication
+    jobs:
+    - job: todoapplicationfrontend
+      steps:
+      - task: NodeTool@0
+        inputs:
+          versionSource: 'spec'
+          versionSpec: '16.x'
+
+      - task: PowerShell@2
+        displayName: Npm Install
+        inputs:
+          targetType: 'inline'
+          script: 'npm install'
+
+      - task: PowerShell@2
+        displayName: Npm run build
+        inputs:
+          targetType: 'inline'
+          script: 'npm run build'
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(System.DefaultWorkingDirectory)/build'
+          artifact: 'todo-frontend-application-build'
+          publishLocation: 'pipeline'
