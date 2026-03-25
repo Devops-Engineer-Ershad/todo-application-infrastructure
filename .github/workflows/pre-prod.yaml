@@ -1,5 +1,4 @@
 name: todo application infra setup
-
 on:
   workflow_dispatch:
   pull_request:
@@ -14,21 +13,18 @@ permissions:
 env:
   TF_IN_AUTOMATION: "true"
   TF_DIR: environments/dev
-
   ARM_USE_OIDC: "true"
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 jobs:
-# 🔹 TERRAFORM PLAN
   terraform-plan:
     name: Terraform Plan
     runs-on: self-hosted
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v4          
 
       - name: Terraform Version
         run: terraform --version
@@ -46,27 +42,25 @@ jobs:
         with:
           name: tfplan
           path: ${{ env.TF_DIR }}/tfplan
-          
-# 🔹 TERRAFORM APPLY (WITH APPROVAL)
+
   terraform-apply:
     name: Terraform Apply
     needs: terraform-plan
     runs-on: self-hosted
-    environment: pre-prod   # 👈 approval gate yahin lagega
-
+    environment: pre-prod
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v6.0.2
+      - name: Checkout
+        uses: actions/checkout@v4          
 
       - name: Download tfplan Artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4  
         with:
           name: tfplan
           path: ${{ env.TF_DIR }}
 
-      # - name: Terraform Init
-      #   run: terraform init
-      #   working-directory: ${{ env.TF_DIR }}
+      - name: Terraform Init
+        run: terraform init                 
+        working-directory: ${{ env.TF_DIR }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
