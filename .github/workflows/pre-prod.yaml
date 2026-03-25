@@ -34,10 +34,10 @@ jobs:
       - name: OS info
         run: systeminfo
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
-        with:
-          terraform_wrapper: false
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2.0.3
+      #   with:
+      #     terraform_wrapper: false
 
       - name: Terraform Version
         run: terraform --version
